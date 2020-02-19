@@ -23,16 +23,17 @@ class Home extends React.Component {
   }
   async componentDidMount()
   {
+  
    await axios.get('https://spacejelly.network/price/')
     .then(res => {
      console.log(res.data)
      this.setState({prices : res.data})
-     this.setState({bitcoin :Number(parseFloat(res.data.BTC.USDT).toFixed(1)) })
-     this.setState({eth : Number(parseFloat(res.data.ETH.USDT).toFixed(1)) })
-     this.setState({dai : Number(parseFloat(res.data.DAI.USDT).toFixed(1)) })
-     this.setState({trx : Number(parseFloat(res.data.TRX.USDT).toFixed(2)) })
-     this.setState({ae :  Number(parseFloat(res.data.AE.USDT).toFixed(1))})
-     this.setState({usdt :  Number(parseFloat(res.data.USDT.USDT).toFixed(1)) })
+     this.setState({bitcoin :Number(parseFloat(res.data.BTC.USDT).toFixed(2)) })
+     this.setState({eth : Number(parseFloat(res.data.ETH.USDT).toFixed(5)) })
+     this.setState({dai : Number(parseFloat(res.data.DAI.USDT).toFixed(5)) })
+     this.setState({trx : Number(parseFloat(res.data.TRX.ETH).toFixed(5)) })
+     this.setState({ae :  Number(parseFloat(res.data.AE.USDT).toFixed(5))})
+     this.setState({usdt :  Number(parseFloat(res.data.USDT.USDT).toFixed(5)) })
      console.log(this.state.prices)
      
          })      

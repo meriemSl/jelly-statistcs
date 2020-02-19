@@ -4,11 +4,9 @@ import axios from "axios";
 import {
  
   Card,
-  colors,
   Page,
   Grid,
-  StatsCard,
-  Form
+  colors,
 } from "tabler-react";
 import SiteWrapper from ".././SiteWrapper.react";
 import C3Chart from "react-c3js";
@@ -67,31 +65,38 @@ class LiquidityProviders extends React.Component {
 
 
     render() {
+
       return (
+        
   <SiteWrapper>
-      <Page.Content >
+      <Page.Content style={ {backgroundColor: 'blue' }}>
       <Grid.Row cards={true}>
            
-           <Card>
+           <Card > 
                   <Card.Header>
                     <Card.Title>Liquidity value in dollar </Card.Title>
                   </Card.Header>
                   <Card.Body>
-              
-                  <C3Chart
-                      style={{ height: "20rem" }}
+                
+                  <C3Chart 
+
+                      style={
+                             { height: "20rem"   }}
                       data={{
                         columns: this.state.balances,
                         type: "pie", 
                        
                       }}
                       legend={{
-                        show: false, //hide legend
+                        show: true, //hide legend
+                        position: 'right'
                       }}
+                  
                       padding={{
                         bottom: 0,
                         top: 0,
                       }}
+                    
                     />
                   
              </Card.Body>

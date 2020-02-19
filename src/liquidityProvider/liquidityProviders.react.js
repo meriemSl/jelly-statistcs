@@ -1,6 +1,6 @@
 
 import React, {useState ,useEffect } from "react";
-import axios from "axios";
+import axios, * as others from 'axios';
 import {
  
   Card,
@@ -10,144 +10,117 @@ import {
 } from "tabler-react";
 import SiteWrapper from ".././SiteWrapper.react";
 import C3Chart from "react-c3js";
+import c3 from "c3";
+
 
 class LiquidityProviders extends React.Component { 
 
 
   constructor(props) {
     super(props);
-    this.state = {value: '' , balances : [] , data: []};
+    this.state = {value: '' , balances : [ ] , data: []};
     
     this.handleChange = this.handleChange.bind(this);
    
   }
+  async renderChart(event) {
+    try { 
+      var self = this;
+    (function() {
+        self.chart = c3.generate({
+        bindto: "#pie1",
+        data : {
+          columns: self.state.balances,
+          type: 'pie',
 
-  //  var [data, setData] = useState([])
-  //  var [balances, setBalances] = useState([ {name: 'www.site1.com', upload: 200, download: 200, total: 400},
-  //                                           {name: 'www.site2.com', upload: 100, download: 300, total: 400},
-  //                                           {name: 'www.site3.com', upload: 300, download: 200, total: 500},
-  //                                           {name: 'www.site4.com', upload: 400, download: 100, total: 500}]);
-  //  var [ dataPoint1,setDataPoint1 ] =useState([]);
-
+        },
+        pie : {
+          // max: this.limit,
+          label: {
+            ratio : 2, 
+            format: function (value, ratio,id) {
+              return id;
+            }
+          },
+          
+        },
+      });
+    })();
+  }catch(error)
+   { console.log(error)}
+ 
+  }
   async handleChange(event) {
 
     try { 
-     
 
-    
-    this.setState({value: event.target.value});
-    this.state.balances = []
-    // this.setState({balances:[]});
-    switch (event.target.value)
-    {
-      case 'ETH' :
-        console.log('ETH')
-        
-        this.state.balances.push( [this.state.data.balances.ETH.address,parseFloat(this.state.data.balances.ETH.balanceShort) ])
-        console.log(this.state.balances)
-        
-  
+      this.setState({value: event.target.value});
+
+       this.state.balances.length = 0 ;
+      this.setState({balances:[]});
+      // console.log(this.state.balances)
+      switch (event.target.value)
+       {
+        case 'ETH' :
+           this.state.balances.push( [this.state.data.balances.ETH.address,parseFloat(this.state.data.balances.ETH.balanceShort) ])
         break;  
-     case 'BTC' :
-        console.log('btc')
-        this.state.balances.push( [this.state.data.balances.BTC.address ,parseFloat(this.state.data.balances.BTC.balanceShort)] ) 
-        this.setState({balances: this.state.balances  })
-        console.log(this.state.balances)
-      
-        break;
-      case 'AE' :
-        console.log('AE')
-       this.state.balances.push( [this.state.data.balances.AE.address ,parseFloat(this.state.data.balances.AE.balanceShort)] ) 
        
-       console.log(this.state.balances)  
-      break;
+        case 'BTC' :
+           this.state.balances.push( [this.state.data.balances.BTC.address ,parseFloat(this.state.data.balances.BTC.balanceShort)] ) 
+        break;
+        case 'AE' :
+          this.state.balances.push( [this.state.data.balances.AE.address ,parseFloat(this.state.data.balances.AE.balanceShort)] ) 
+        break;
+        case 'DAI' :
+          this.state.balances.push( [this.state.data.balances.DAI.address ,parseFloat(this.state.data.balances.DAI.balanceShort)] ) 
+        break;
         default :
         console.log('default')
         this.state.balances.push([this.state.data.balances.ETH.balanceShort , parseFloat(this.state.data.balances.ETH.address)] );
     }
-    
-    // 78/*425
-    // console.log(this.state.balances)
- 
-     }catch(error)
+
+    this.renderChart()
+
+  }catch(error)
        {
          console.log(error)
        }
-
-
-
-
   }
 
   async componentDidMount()
   {
+    
      await axios.get('https://spacejelly.network/listener/provider/info')
      .then((res) => {
            this.setState({ data: res.data})
            this.state.balances.push( [this.state.data.balances.ETH.address,parseFloat(this.state.data.balances.ETH.balanceShort) ])
            this.setState({ balances : this.state.balances }) 
      })
-     console.log(this.state.balances)
+     console.log('la'+this.state.balances)
+     this.renderChart()
   }
-
   
-//  async  getPrice()
-//    {
-//        try {
-//         await axios.get('https://spacejelly.network/listener/provider/info')
-//      .then((res) => {
-//            this.setState({ data : res.data})
-         
-          
-//      })
-//      //console.log(balances)
-//        } catch (error) {
-//            console.log(error)
-//        }
-
-//  }
-
-
-
-
-    render() {
-      return (
+render() {
+    return (
   <SiteWrapper>
       <Page.Content title="Liquidity provider">
-      <Grid.Row cards={true}>
-           
+      <Grid.Row cards={true}>  
            <Card>
                   <Card.Header>
                     <Card.Title>Providers by tokens </Card.Title>
                   </Card.Header>
                   <Card.Body>
-                  <Form.Group 
+              <Form.Group 
                label="Currency" >
                 <Form.Select value={this.state.value} onChange={this.handleChange} >
                   <option value="ETH" >ETH</option>
                   <option value="BTC">BTC</option>
                   <option value="AE">AE</option>
+                  <option value="DAI">DAI</option>
                 </Form.Select>
               </Form.Group>
-                  <C3Chart
-                      style={{ height: "20rem" }}
-                      data={{
-                        columns: this.state.balances,
-                        type: "pie", // default type of chart
-                        // keys: {
-                        //   // x: 'name', // it's possible to specify 'x' when category axis
-                        //   value: [name,'total']
-                        // }
-                      }}
-                      legend={{
-                        show: false, //hide legend
-                      }}
-                      padding={{
-                        bottom: 0,
-                        top: 0,
-                      }}
-                    />
-                  
+              <div id="pie1"></div>
+                   
              </Card.Body>
           </Card>
       </Grid.Row>
