@@ -1,23 +1,22 @@
 
-import React, {useState ,useEffect } from "react";
+import React from "react";
 import axios from "axios";
 import {
  
   Card,
   Page,
   Grid,
-  colors,
 } from "tabler-react";
 import SiteWrapper from ".././SiteWrapper.react";
 import C3Chart from "react-c3js";
+import d3 from "d3"
 
 class LiquidityProviders extends React.Component { 
 
 
   constructor(props) {
     super(props);
-    this.state = {balances : [] , data: []};
-    
+    this.state = {balances : [] , data: [], total:0  , tokens : ["ETH" ,"BTC" , "AE" , "DAI" , "WBTC"]}; 
     this.handleChange = this.handleChange.bind(this);
    
   }
@@ -49,24 +48,23 @@ class LiquidityProviders extends React.Component {
      await axios.get('https://spacejelly.network/listener/provider/info')
      .then((res) => {
            this.setState({ data: res.data})
-           this.state.balances.push( ["eth", ((res.data.balances.ETH.balanceShort * res.data.prices.ETH.USDT )/0.994) ])
-           this.state.balances.push( ["dai", ((res.data.balances.DAI.balanceShort * res.data.prices.DAI.USDT )/0.994) ])
-           this.state.balances.push( ["AE", ((res.data.balances.AE.balanceShort * res.data.prices.AE.USDT )/0.994) ])
-           this.state.balances.push( ["BTC", ((res.data.balances.BTC.balanceShort * res.data.prices.BTC.USDT )/0.994) ])
+           console.log(this.state.tokens.length)
+           for ( var i = 0 ; i < this.state.tokens.length ; i++)
+           {   
+             console.log('lal')
+             this.state.balances.push( [this.state.tokens[i], ((res.data.balances[this.state.tokens[i]].balanceShort * res.data.prices[this.state.tokens[i]].USDT )/res.data.prices.USDT.USDT) ])
+             this.state.total += ((res.data.balances[this.state.tokens[i]].balanceShort * res.data.prices[this.state.tokens[i]].USDT )/res.data.prices.USDT.USDT)
+            }
+  
            this.setState({ balances : this.state.balances }) 
+           this.setState ({ total : this.state.total})
      })
      console.log(this.state.balances)
   }
 
-  
+render() {
 
-
-
-
-
-    render() {
-
-      return (
+  return (
         
   <SiteWrapper>
       <Page.Content style={ {backgroundColor: 'blue' }}>
@@ -77,21 +75,43 @@ class LiquidityProviders extends React.Component {
                     <Card.Title>Liquidity value in dollar </Card.Title>
                   </Card.Header>
                   <Card.Body>
-                
+                  <span>
+                   <h5>Total tokens:</h5> {this.state.total} $ 
+                 </span>
                   <C3Chart 
 
                       style={
-                             { height: "20rem"   }}
+                             { height: "20rem",
+                               margin : "20px"  ,
+                              
+                            }}
                       data={{
                         columns: this.state.balances,
                         type: "pie", 
                        
                       }}
+                      colors ={{
+                        pattern:   ['#0065A3', '#767670', '#D73648', '#7FB2CE', '#00345B']
+                       }}
+
                       legend={{
                         show: true, //hide legend
-                        position: 'right'
+                        position: 'bottom'
                       }}
-                  
+                      pie ={ {
+                        // max: this.limit,
+                        label: {
+                          threshold: 0.02,
+                          ratio : 2.1, 
+                          format: function (value, ratio,id) {
+                            // value = (parseFloat(self.state.data.balances[this.state.ETH].USDT )/0.994) 
+                            value = "$" + Number(value).toFixed(2);
+                            return [id,value].join(); 
+                          },
+                          position: 'outer-middle'
+                        },
+                        
+                      }}
                       padding={{
                         bottom: 0,
                         top: 0,
