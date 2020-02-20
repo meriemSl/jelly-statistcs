@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/jelly-statistcs/precache-manifest.b76f3550260cf2db1b3108e76a9bc3d7.js"
+  "/jelly-statistcs/precache-manifest.895f764339244268afc4a162b46e4cac.js"
 );
 
 workbox.clientsClaim();
